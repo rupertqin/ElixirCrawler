@@ -14,7 +14,7 @@ defmodule ElixirCrawler.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :httpoison, :postgrex, :ecto]]
   end
 
   # Dependencies can be Hex packages:
@@ -27,6 +27,8 @@ defmodule ElixirCrawler.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:httpoison, "~> 0.10.0"},
+      {:ecto, "~> 2.0.0"},
+      {:postgrex, ">= 0.0.0"}]
   end
 end

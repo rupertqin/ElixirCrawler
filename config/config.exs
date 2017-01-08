@@ -28,3 +28,11 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+config :elixir_crawler, ElixirCrawler.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  hostname: "localhost",
+  database: "dev_reading",
+  username: "postgres",
+  password: ""
+
+config :elixir_crawler, ecto_repos: [ElixirCrawler.Repo]
