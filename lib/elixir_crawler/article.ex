@@ -8,7 +8,7 @@ defmodule ElixirCrawler.Article do
     field :ps,    :string
     field :html,  :string
 
-    timestamps
+    timestamps()
   end
 
   # @required_fields ~w(title url issue)

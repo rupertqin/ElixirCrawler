@@ -30,6 +30,7 @@ defmodule ElixirCrawler.Mixfile do
   defp deps do
     [{:httpoison, "~> 0.10.0"},
       {:ecto, "~> 2.0"},
+      {:floki, "~> 0.11.0"},
       {:postgrex, " ~> 0.12"}]
   end
 end
