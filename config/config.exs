@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure for your application as:
 #
-#     config :elixir_crawler, key: :value
+#     config :senor_pink, key: :value
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:elixir_crawler, :key)
+#     Application.get_env(:senor_pink, :key)
 #
 # Or configure a 3rd-party app:
 #
@@ -28,11 +28,11 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
-config :elixir_crawler, ElixirCrawler.Repo,
+config :senor_pink, SenorPink.Repo,
   adapter: Ecto.Adapters.Postgres,
   hostname: "localhost",
   database: "dev_reading",
   username: "postgres",
   password: ""
 
-config :elixir_crawler, ecto_repos: [ElixirCrawler.Repo]
+config :senor_pink, ecto_repos: [SenorPink.Repo]

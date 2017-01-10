@@ -1,4 +1,4 @@
-defmodule ElixirCrawler.Repo.Migrations.AddArticleTable do
+defmodule SenorPink.Repo.Migrations.AddArticleTable do
   use Ecto.Migration
 
   def change do

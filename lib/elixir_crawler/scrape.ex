@@ -1,4 +1,4 @@
-defmodule ElixirCrawler.Scrape do
+defmodule SenorPink.Scrape do
   use GenServer
 
   def start_link do
@@ -11,6 +11,6 @@ defmodule ElixirCrawler.Scrape do
   end
 
   def start do
-    {:ok, data} = ElixirCrawler.Repo.insert %ElixirCrawler.Article{title: "Ahab", url: "http:www.baidu.com", issue: 87}
+    {:ok, data} = SenorPink.Repo.insert %SenorPink.Article{title: "Ahab", url: "http:www.baidu.com", issue: 87}
   end
 end

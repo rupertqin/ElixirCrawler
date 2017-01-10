@@ -1,4 +1,4 @@
-defmodule ElixirCrawler.Article do
+defmodule SenorPink.Article do
   use Ecto.Schema
 
   schema "article" do

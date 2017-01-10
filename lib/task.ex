@@ -1,6 +1,6 @@
 defmodule Mix.Tasks.Hello do
   use Mix.Task
-  alias ElixirCrawler.Base
+  alias SenorPink.Base
 
   def run(_) do
     Mix.shell.info "hello"
