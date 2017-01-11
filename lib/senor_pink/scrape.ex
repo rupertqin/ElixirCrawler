@@ -34,40 +34,47 @@ defmodule SenorPink.Scrape do
   def fetch_issue(issue) do
     HTTPoison.start
     {:ok, response} = HTTPoison.get("#{@base_url}#{issue}", @headers, @request_options)
-    IO.inspect response
     case response.status_code do
       200 ->
-        h4 = Floki.find(response.body, "h4")
-             |> Enum.slice(0,4)
-        IO.inspect h4
-        loop_article_list(h4)
+        links = extract_valid_a(response.body)
+        loop_article_list(links, issue)
       _ ->
         IO.inspect "BAD LINK: "
     end
     []
   end
 
-  def loop_article_list([head | tail]) do
-    fetch_article(head)
-    loop_article_list(tail)
+  def loop_article_list([head | tail], issue) do
+    fetch_article(head, issue)
+    loop_article_list(tail, issue)
   end
 
-  def loop_article_list([]) do
+  def loop_article_list([], issue) do
     []
   end
 
-  def fetch_article(el) do
-    HTTPoison.start
-    IO.inspect el
-    {"h4", [], [{"a", [{"target", _}, {"href", href}], _} | _]} = el
+  def fetch_article({href, title}, issue) do
     IO.inspect href
+    HTTPoison.start
     {:ok, response} = HTTPoison.get(href, @headers, @request_options)
     case response.status_code do
       200 ->
-        {:ok, data} = SenorPink.Repo.insert %SenorPink.Article{title: "Ahab", url: "http:www.baidu.com", issue: 87, html: response.body}
+        # Enum.at(response.headers, 3)
+        {:ok, data} = SenorPink.Repo.insert %SenorPink.Article{title: title, url: href, issue: issue, html: response.body}
       _ ->
         IO.inspect "BAD LINK: "
     end
 
+  end
+
+  def extract_valid_a(html) do
+    Floki.find(html, "h4 a[href^='http://weekly.manong.io/bounce']")
+    |> Enum.map(fn(a) ->
+      IO.inspect a
+      {"a", [_, {"href", href}], [title]} = a
+      {href, title}
+    end)
+    |> Enum.filter(fn {href, _} -> !(href =~ ~r/job.manong.io/) end)
+    |> Enum.slice(0, 4)
   end
 end
