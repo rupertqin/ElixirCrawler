@@ -22,14 +22,11 @@ defmodule SenorPink.Scrape do
   end
 
   def loop_issue_list([head | tail]) do
-    IO.inspect head
     fetch_issue(head)
     loop_issue_list(tail)
   end
 
-  def loop_issue_list([]) do
-    []
-  end
+  def loop_issue_list([]), do: []
 
   def fetch_issue(issue) do
     HTTPoison.start
@@ -49,12 +46,9 @@ defmodule SenorPink.Scrape do
     loop_article_list(tail, issue)
   end
 
-  def loop_article_list([], issue) do
-    []
-  end
+  def loop_article_list([], issue), do: []
 
   def fetch_article({href, title}, issue) do
-    IO.inspect href
     HTTPoison.start
     {:ok, response} = HTTPoison.get(href, @headers, @request_options)
     case response.status_code do
@@ -70,11 +64,19 @@ defmodule SenorPink.Scrape do
   def extract_valid_a(html) do
     Floki.find(html, "h4 a[href^='http://weekly.manong.io/bounce']")
     |> Enum.map(fn(a) ->
-      IO.inspect a
       {"a", [_, {"href", href}], [title]} = a
+      href = extract_real_url(href)
+      IO.inspect href
       {href, title}
     end)
     |> Enum.filter(fn {href, _} -> !(href =~ ~r/job.manong.io/) end)
     |> Enum.slice(0, 4)
+  end
+
+  def extract_real_url(url) do
+    URI.parse(url)
+    |>Map.get(:query)
+    |>URI.decode_query
+    |>Map.get("url")
   end
 end
