@@ -6,7 +6,7 @@ defmodule SenorPink.Scrape do
   @per_page   4
   @base_url   "http://weekly.manong.io/issues/"
   @headers    ["User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3"]
-  @request_options    [recv_timeout: 5000, follow_redirect: true, max_redirect: 5]
+  @request_options    [recv_timeout: 10_000, follow_redirect: false, max_redirect: 5]
 
   def start_link do
     GenServer.start_link(__MODULE__, :ok, [])
@@ -36,7 +36,7 @@ defmodule SenorPink.Scrape do
         links = extract_valid_a(response.body)
         loop_article_list(links, issue)
       _ ->
-        IO.inspect "BAD LINK: "
+        IO.inspect "BAD ISSUE: #{issue}"
     end
     []
   end
@@ -46,37 +46,52 @@ defmodule SenorPink.Scrape do
     loop_article_list(tail, issue)
   end
 
-  def loop_article_list([], issue), do: []
+  def loop_article_list([], _issue), do: []
 
   def fetch_article({href, title}, issue) do
     HTTPoison.start
-    {:ok, response} = HTTPoison.get(href, @headers, @request_options)
-    case response.status_code do
-      200 ->
-        # Enum.at(response.headers, 3)
-        {:ok, data} = SenorPink.Repo.insert %SenorPink.Article{title: title, url: href, issue: issue, html: response.body}
+    case HTTPoison.get(href, @headers, @request_options) do
+      {:ok, response} ->
+        case response.status_code do
+          200 ->
+            SenorPink.Repo.insert %SenorPink.Article{title: title, url: href, issue: issue, html: response.body}
+          n when n in [301, 302, 307]->
+          #redirected
+            location = response.headers
+                       |>Enum.find(fn(t) -> elem(t, 0) == "Location" end)
+                       |>elem(1)
+            fetch_article({location, title}, issue)
+          _ ->
+            "no match"
+        end
+      {:error, _response} ->
+        SenorPink.Repo.insert %SenorPink.Article{title: title, url: href, issue: issue, html: "500"}
+        IO.inspect "BAD LINK 500: #{href}"
       _ ->
-        IO.inspect "BAD LINK: "
+        SenorPink.Repo.insert %SenorPink.Article{title: title, url: href, issue: issue, html: "400"}
+        IO.inspect "BAD LINK 404: #{href}"
     end
-
+    # with {:ok, response}  <- HTTPoison.get(href, @headers, @request_options),
+    #      200 <- response.status_code do
+    #        {:ok, data} = SenorPink.Repo.insert %SenorPink.Article{title: title, url: href, issue: issue, html: response.body}
+    # else
+    #   {:error, response} ->
+    #     IO.inspect "BAD LINK 500: "
+    #   _ ->
+    #     IO.inspect "BAD LINK 404: "
+    #   IO.inspect href
+    # end
   end
 
   def extract_valid_a(html) do
     Floki.find(html, "h4 a[href^='http://weekly.manong.io/bounce']")
     |> Enum.map(fn(a) ->
       {"a", [_, {"href", href}], [title]} = a
-      href = extract_real_url(href)
+      href = URI.parse(href) |>Map.get(:query) |>URI.decode_query |>Map.get("url")
       IO.inspect href
       {href, title}
     end)
     |> Enum.filter(fn {href, _} -> !(href =~ ~r/job.manong.io/) end)
-    |> Enum.slice(0, 4)
-  end
-
-  def extract_real_url(url) do
-    URI.parse(url)
-    |>Map.get(:query)
-    |>URI.decode_query
-    |>Map.get("url")
+    # |> Enum.slice(0, 0)
   end
 end
