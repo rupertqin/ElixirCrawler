@@ -1,5 +1,6 @@
 defmodule SenorPink.Article do
   use Ecto.Schema
+  import Ecto.Changeset
 
   schema "article" do
     field :title, :string
@@ -16,7 +17,7 @@ defmodule SenorPink.Article do
 
   # def changeset(article, params \\ %{}) do
   #   article
-  #   |> Ecto.Changeset.cast(params, ~w(title url issue))
-  #   |> Ecto.Changeset.validate_required([:title, :url])
+  #   |> cast(params, ~w(html ps title url issue)a)
+  #   |> validate_required([:title, :url])
   # end
 end

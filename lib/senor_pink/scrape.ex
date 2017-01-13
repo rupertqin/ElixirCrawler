@@ -6,7 +6,7 @@ defmodule SenorPink.Scrape do
   @per_page   4
   @base_url   "http://weekly.manong.io/issues/"
   @headers    ["User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3"]
-  @request_options    [recv_timeout: 10_000, follow_redirect: false, max_redirect: 5]
+  @request_options    [recv_timeout: 10_000, follow_redirect: false, max_redirect: 5, hackney: [:insecure]]
 
   def start_link do
     GenServer.start_link(__MODULE__, :ok, [])
