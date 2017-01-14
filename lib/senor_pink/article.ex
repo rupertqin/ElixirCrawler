@@ -1,6 +1,6 @@
 defmodule SenorPink.Article do
   use Ecto.Schema
-  import Ecto.Changeset
+  # import Ecto.Changeset
 
   schema "article" do
     field :title, :string
