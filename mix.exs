@@ -14,7 +14,7 @@ defmodule SenorPink.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :httpoison, :postgrex, :ecto],
+    [applications: [:logger, :httpoison, :postgrex, :ecto, :readability],
      mod: {SenorPink, []}]
   end
 
@@ -28,9 +28,10 @@ defmodule SenorPink.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:httpoison, "~> 0.10.0"},
+    [{:httpoison, "~> 0.10.0", override: true},
+      {:readability, "~> 0.6.1"},
       {:ecto, "~> 2.0"},
-      {:floki, "~> 0.11.0"},
+      {:floki, "~> 0.11.0", override: true},
       {:postgrex, " ~> 0.12"}]
   end
 end
