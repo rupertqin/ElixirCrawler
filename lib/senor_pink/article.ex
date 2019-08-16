@@ -2,7 +2,7 @@ defmodule SenorPink.Article do
   use Ecto.Schema
   # import Ecto.Changeset
 
-  schema "article" do
+  schema "articles" do
     field :title,         :string
     field :url,           :string
     field :issue,         :integer
